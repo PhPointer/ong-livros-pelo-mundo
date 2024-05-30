@@ -60,6 +60,86 @@ CREATE TABLE usuarios (
   tipo_usuario varchar (255) NOT NULL CHECK(tipo_usuario IN ('adm', 'desenvolvedorSenior', 'estagiario', 'usuario'))
 );
 
+-- Criando a Função para Validar String.
+CREATE OR REPLACE FUNCTION VALIDAR_STRING(STR TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+	IF STR IS NOT NULL AND LENGTH(TRIM(STR)) > 0 THEN 
+		RETURN TRUE;
+	ELSE
+		RETURN FALSE;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT VALIDAR_STRING('');
+SELECT VALIDAR_STRING(NULL);
+SELECT VALIDAR_STRING(' TESTE ');
+
+-- **********************Testes da Função ******************************
+
+-- Criando a Função para Obter id de um Endereço.
+CREATE OR REPLACE FUNCTION OBTER_ID_ENDERECO(ENDERECO TEXT)
+RETURNS INTEGER AS $$
+DECLARE 
+	COD INTEGER;
+BEGIN
+	IF VALIDAR_STRING(ENDERECO) THEN
+	
+		SELECT CE.ID_CIES INTO COD 
+		FROM CIDADE_ESTADO AS CE
+		WHERE LOWER(CE.RUA) = LOWER(ENDERECO);
+		
+		IF COD IS NOT NULL THEN
+			RETURN COD;
+		ELSE
+			RETURN 0;
+		END IF;
+	ELSE
+		RAISE NOTICE 'ENDEREÇO INVÁLIDO!';
+		RETURN 0;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT OBTER_ID_ENDERECO('');
+SELECT OBTER_ID_ENDERECO(NULL);
+SELECT OBTER_ID_ENDERECO('Avenida Brasil');
+SELECT OBTER_ID_ENDERECO('AVENIDA BRASIL');
+SELECT OBTER_ID_ENDERECO('rua das palmeiras');
+
+-- **********************Testes da Função ******************************
+
+-- Criando a Função para inserir um novo Curso.
+CREATE OR REPLACE FUNCTION add_curso(nome_curso text, tipo_curso text, endereco text)
+RETURNS BOOLEAN AS $$
+
+BEGIN
+	IF VALIDAR_STRING(nome_curso) 
+		AND VALIDAR_STRING(tipo_curso) 
+		AND VALIDAR_STRING(endereco) THEN
+			INSERT INTO CURSOS(ENDERECO, TIPOCURSO, NOMECURSO)
+			VALUES(
+				OBTER_ID_ENDERECO(endereco),
+				tipo_curso,
+				nome_curso
+			);
+		RAISE NOTICE 'CURSO INSERIDO COM SUCESSO!';
+		RETURN TRUE;
+	ELSE
+		RAISE NOTICE 'ERRO: CURSO NÃO INSERIDO!';
+		RETURN FALSE;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT add_curso('ADS', 'TECNOLOGIA', 'RUA DAS FLORES');
+SELECT add_curso('ENG', 'TECNOLOGIA', 'AVENIDA BRASIL');
+SELECT add_curso('LING. ESTRANGEIRA', 'LETRAS', 'RUA DA ALEGRIA');
+SELECT * FROM CURSOS;
+
+-- **********************Testes da Função ******************************
+
 -- Criando a Função para inserir um novo livro
 CREATE OR REPLACE FUNCTION INSERIR_LIVRO(NOME TEXT)
 RETURNS BOOLEAN AS $$
