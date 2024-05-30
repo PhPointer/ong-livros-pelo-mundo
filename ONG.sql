@@ -60,6 +60,28 @@ CREATE TABLE usuarios (
   tipo_usuario varchar (255) NOT NULL CHECK(tipo_usuario IN ('adm', 'desenvolvedorSenior', 'estagiario', 'usuario'))
 );
 
+-- Criando a Função para inserir um novo livro
+CREATE OR REPLACE FUNCTION INSERIR_LIVRO(NOME TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+	IF NOME IS NOT NULL AND LENGTH(TRIM(NOME)) > 0 THEN
+	  INSERT INTO LIVROS(NOME_LIVRO) VALUES(NOME);
+		RAISE NOTICE 'LIVRO INSERIDO COM SUCESSO';
+		RETURN TRUE;
+	ELSE
+		RAISE NOTICE 'LIVRO NÃO INSERIDO, NOME VAZIO!';
+		RETURN FALSE;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT INSERIR_LIVRO('TESTE');
+SELECT INSERIR_LIVRO('');
+SELECT INSERIR_LIVRO(NULL);
+SELECT * FROM LIVROS;
+
+-- **********************Testes da Função ******************************
+
 -- Criando a Função para gerar datas aleatórias para os livros doados
 CREATE OR REPLACE FUNCTION random_date_between(start_date DATE, end_date DATE) RETURNS DATE AS $$
 DECLARE
