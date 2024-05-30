@@ -60,6 +60,28 @@ CREATE TABLE usuarios (
   tipo_usuario varchar (255) NOT NULL CHECK(tipo_usuario IN ('adm', 'desenvolvedorSenior', 'estagiario', 'usuario'))
 );
 
+-- Criando a Função para Adicionar uma editora.
+
+CREATE OR REPLACE FUNCTION ADD_EDITORA(NOME_EDITORA TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+	IF VALIDAR_STRING(NOME_EDITORA) THEN
+		INSERT INTO EDITORAS(nome_editora) VALUES(NOME_EDITORA);
+		RAISE NOTICE 'EDITORA INSERIDA COM SUCESSO!';
+		RETURN TRUE;
+	ELSE
+		RAISE NOTICE 'ERRO: EDITORA NÃO INSERIDA!';
+		RETURN FALSE;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT ADD_EDITORA('Editora XPTO');
+SELECT ADD_EDITORA('Editora XPTO2');
+SELECT ADD_EDITORA('Editora XPT3');
+
+-- **********************Testes da Função ******************************
+
 -- Criando a Função para Validar String.
 CREATE OR REPLACE FUNCTION VALIDAR_STRING(STR TEXT)
 RETURNS BOOLEAN AS $$
