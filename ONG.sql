@@ -60,6 +60,38 @@ CREATE TABLE usuarios (
   tipo_usuario varchar (255) NOT NULL CHECK(tipo_usuario IN ('adm', 'desenvolvedorSenior', 'estagiario', 'usuario'))
 );
 
+-- Criando a Função para Adicionar um Usuario.
+
+CREATE OR REPLACE FUNCTION ADD_USUARIO(NOME_USER TEXT, TYPE_USER TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+	IF VALIDAR_STRING(NOME_USER) AND
+	   VALIDAR_STRING(TYPE_USER) AND
+	   CHECK_TYPE_USER(TYPE_USER) THEN
+	   	INSERT INTO USUARIOS(nome_usuario, tipo_usuario)
+		VALUES(NOME_USER, TYPE_USER);
+	   	RAISE NOTICE 'Usuário adicionado com sucesso.';
+		RETURN TRUE;
+	ELSE
+		RAISE NOTICE 'Falha ao adicionar usuário: valores inválidos.';
+		RETURN FALSE;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT ADD_USUARIO('', '');
+SELECT ADD_USUARIO(NULL,NULL);
+SELECT ADD_USUARIO('', 'ASDADAD');
+SELECT ADD_USUARIO('EDINEI', '');
+SELECT ADD_USUARIO('EDINEI', 'ASAASAAC');
+SELECT ADD_USUARIO('EDINEI',NULL);
+SELECT ADD_USUARIO('', 'estagiario');
+SELECT ADD_USUARIO(NULL, 'estagiario');
+SELECT ADD_USUARIO('EDINEI', 'estagiario');
+SELECT * FROM USUARIOS;
+
+-- **********************Testes da Função ******************************
+
 -- Criando a Função para verificar tipo de usuario.
 
 CREATE OR REPLACE FUNCTION CHECK_TYPE_USER(USER_TYPE TEXT)
