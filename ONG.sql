@@ -60,6 +60,35 @@ CREATE TABLE usuarios (
   tipo_usuario varchar (255) NOT NULL CHECK(tipo_usuario IN ('adm', 'desenvolvedorSenior', 'estagiario', 'usuario'))
 );
 
+-- Criando Função para Adicionar um novo Endereço.
+
+CREATE OR REPLACE FUNCTION ADD_ENDERECO(cidade TEXT, estado TEXT, rua TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+	IF VALIDAR_STRING(cidade) AND
+	   VALIDAR_STRING(estado) AND
+	   VALIDAR_STRING(rua) THEN
+	   INSERT INTO CIDADE_ESTADO(Cidade,Estado,Rua)
+	   VALUES(cidade,estado,rua);
+	   RAISE NOTICE 'ENDEREÇO ADICIONADO COM SUCESSO!';
+	   RETURN TRUE;
+	ELSE
+		RAISE NOTICE 'ERRO: FALHA AO ADICIONAR ENDEREÇO!';
+		RETURN FALSE;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT ADD_ENDERECO('','','');
+SELECT ADD_ENDERECO(NULL,NULL,NULL);
+SELECT ADD_ENDERECO('TESTE CIDADE','TESTE ESTADO','');
+SELECT ADD_ENDERECO('TESTE CIDADE','','TESTE RUA');
+SELECT ADD_ENDERECO('','TESTE ESTADO','TESTE RUA');
+SELECT ADD_ENDERECO('TESTE CIDADE','TESTE ESTADO','TESTE RUA');
+SELECT * FROM CIDADE_ESTADO;
+
+-- ********************** Testes da Função ******************************
+
 -- Criando a Função para inserir Acervo.
 
 CREATE OR REPLACE FUNCTION ADD_ACERVO(livro TEXT, autor TEXT, editora TEXT)
