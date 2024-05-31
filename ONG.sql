@@ -60,6 +60,34 @@ CREATE TABLE usuarios (
   tipo_usuario varchar (255) NOT NULL CHECK(tipo_usuario IN ('adm', 'desenvolvedorSenior', 'estagiario', 'usuario'))
 );
 
+-- Criando a Função para verificar tipo de usuario.
+
+CREATE OR REPLACE FUNCTION CHECK_TYPE_USER(USER_TYPE TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+	IF VALIDAR_STRING(USER_TYPE)THEN
+		RETURN LOWER(USER_TYPE) IN(LOWER('adm'), 
+							LOWER('desenvolvedorSenior'), 
+							LOWER('estagiario'), 
+							LOWER('usuario'));
+	ELSE
+		RAISE NOTICE 'ERRO: VALOR INVÁLIDO!';
+		RETURN FALSE;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT CHECK_TYPE_USER('');
+SELECT CHECK_TYPE_USER(NULL);
+SELECT CHECK_TYPE_USER('SDCSCS');
+SELECT CHECK_TYPE_USER('adm');
+SELECT CHECK_TYPE_USER('usuario');
+SELECT CHECK_TYPE_USER('estagiario');
+SELECT CHECK_TYPE_USER('desenvolvedorSenior');
+SELECT CHECK_TYPE_USER('desenvolvedorSeniorA');
+
+-- **********************Testes da Função ******************************
+
 -- Criando Função para Adicionar um novo Endereço.
 
 CREATE OR REPLACE FUNCTION ADD_ENDERECO(cidade TEXT, estado TEXT, rua TEXT)
