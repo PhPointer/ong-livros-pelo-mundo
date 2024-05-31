@@ -60,6 +60,43 @@ CREATE TABLE usuarios (
   tipo_usuario varchar (255) NOT NULL CHECK(tipo_usuario IN ('adm', 'desenvolvedorSenior', 'estagiario', 'usuario'))
 );
 
+-- Criando a Função para obter id do acervo.
+
+CREATE OR REPLACE FUNCTION GET_ID_ACERVO(ACERVO TEXT)
+RETURNS INTEGER AS $$
+DECLARE 
+    ACERVO_ID INTEGER;
+BEGIN
+    IF VALIDAR_STRING(ACERVO) THEN
+        SELECT a.id_acervo
+        INTO ACERVO_ID
+        FROM acervo a
+        JOIN livros l ON a.nome_livro = l.id_livros
+        WHERE LOWER(l.nome_livro) = LOWER(ACERVO);
+        
+        RETURN ACERVO_ID;
+    ELSE
+        RAISE NOTICE 'Erro: Valor inválido!';
+        RETURN NULL;
+    END IF;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE NOTICE 'Erro: Não foi possível encontrar o acervo.';
+        RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+
+SELECT GET_ID_ACERVO('');
+SELECT GET_ID_ACERVO(NULL);
+SELECT GET_ID_ACERVO('SDSSDFS');
+SELECT GET_ID_ACERVO('O ALQUIMISTA');
+SELECT GET_ID_ACERVO('O CORTIÇO')
+SELECT * FROM ACERVO;
+SELECT * FROM LIVROS;
+
+-- ********************** Testes da Função ******************************
+
 -- Criando a Função para Adicionar um Usuario.
 
 CREATE OR REPLACE FUNCTION ADD_USUARIO(NOME_USER TEXT, TYPE_USER TEXT)
