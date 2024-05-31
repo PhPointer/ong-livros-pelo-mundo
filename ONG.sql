@@ -60,6 +60,30 @@ CREATE TABLE usuarios (
   tipo_usuario varchar (255) NOT NULL CHECK(tipo_usuario IN ('adm', 'desenvolvedorSenior', 'estagiario', 'usuario'))
 );
 
+-- Criando a Função para adicionar um Autor;
+
+CREATE OR REPLACE FUNCTION ADD_AUTOR(nome TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+	IF VALIDAR_STRING(nome) THEN
+		INSERT INTO AUTORES(NOME_AUTOR)
+		VALUES (nome);
+		RAISE NOTICE 'AUTOR INSERIDO COM SUCESSO!';
+		RETURN TRUE;
+	ELSE
+		RAISE NOTICE 'ERRO: NOME INVÁLIDO';
+		RETURN FALSE;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT ADD_AUTOR('');
+SELECT ADD_AUTOR(NULL);
+SELECT ADD_AUTOR('TESTE');
+SELECT * FROM AUTORES;
+
+-- **********************Testes da Função ******************************
+
 -- Criando a Função para obter id do Autor;
 
 CREATE OR REPLACE FUNCTION OBTER_ID_AUTOR(AUTOR TEXT)
