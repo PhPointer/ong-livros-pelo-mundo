@@ -60,6 +60,38 @@ CREATE TABLE usuarios (
   tipo_usuario varchar (255) NOT NULL CHECK(tipo_usuario IN ('adm', 'desenvolvedorSenior', 'estagiario', 'usuario'))
 );
 
+-- Criando a Função para obter id do Autor;
+
+CREATE OR REPLACE FUNCTION OBTER_ID_AUTOR(AUTOR TEXT)
+RETURNS INTEGER AS $$
+DECLARE COD INTEGER;
+BEGIN
+	IF VALIDAR_STRING(AUTOR) THEN
+		SELECT ID_AUTOR
+		INTO COD 
+		FROM AUTORES
+		WHERE LOWER(NOME_AUTOR) = LOWER(AUTOR) ;
+		IF COD IS NOT NULL THEN
+			RETURN COD;
+		ELSE
+			RETURN 0;
+		END IF;
+	ELSE
+		RAISE NOTICE 'ERRO: NOME DO AUTOR INVÁLIDO!';
+		RETURN 0;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT OBTER_ID_AUTOR('');
+SELECT OBTER_ID_AUTOR(NULL);
+SELECT OBTER_ID_AUTOR('SDSDSDF');
+SELECT OBTER_ID_AUTOR('PAULO COELHO');
+SELECT OBTER_ID_AUTOR('JORGE AMADO');
+SELECT * FROM AUTORES;
+
+-- **********************Testes da Função ******************************
+
 -- Criando a Função para obter id do livro;
 
 CREATE OR REPLACE FUNCTION OBTER_ID_LIVRO(LIVRO TEXT)
