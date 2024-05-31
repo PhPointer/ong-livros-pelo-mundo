@@ -60,6 +60,36 @@ CREATE TABLE usuarios (
   tipo_usuario varchar (255) NOT NULL CHECK(tipo_usuario IN ('adm', 'desenvolvedorSenior', 'estagiario', 'usuario'))
 );
 
+-- Criando a Função para inserir Acervo.
+
+CREATE OR REPLACE FUNCTION ADD_ACERVO(livro TEXT, autor TEXT, editora TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+	if VALIDAR_STRING(livro) AND
+	   VALIDAR_STRING(autor) AND
+	   VALIDAR_STRING(editora) THEN
+	   	INSERT INTO ACERVO(nome_livro, nome_autor, nome_editora)
+		VALUES(OBTER_ID_LIVRO(livro), 
+			   OBTER_ID_AUTOR(autor), 
+			   OBTER_ID_EDITORA(editora));
+		RAISE NOTICE 'ACERVO INSERIDO COM SUCESSO!';	   
+		RETURN TRUE;
+	ELSE
+		RAISE NOTICE 'ERRO: ACERVO NÃO INSERIDO!';
+		RETURN FALSE;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT ADD_ACERVO('', '', '');
+SELECT ADD_ACERVO('SCAACA', 'AASDASD', '');
+SELECT ADD_ACERVO('ASDADDA', '', 'ADADAD');
+SELECT ADD_ACERVO('', 'ADCACA', 'ACACA');
+SELECT ADD_ACERVO('IRACEMA', 'PAULO COELHO', 'ÁTICA');
+SELECT * FROM ACERVO;
+
+-- **********************Testes da Função ******************************
+
 -- Criando a Função para adicionar um Autor;
 
 CREATE OR REPLACE FUNCTION ADD_AUTOR(nome TEXT)
