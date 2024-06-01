@@ -60,6 +60,38 @@ CREATE TABLE usuarios (
   tipo_usuario varchar (255) NOT NULL CHECK(tipo_usuario IN ('adm', 'desenvolvedorSenior', 'estagiario', 'usuario'))
 );
 
+-- Criando a Função para obter id do Curso.
+
+CREATE OR REPLACE FUNCTION GET_ID_CURSO(CURSO TEXT)
+RETURNS INTEGER AS $$
+DECLARE COD INTEGER;
+BEGIN
+	IF VALIDAR_STRING(CURSO) THEN
+	   SELECT ID_CURSO
+	   INTO COD
+	   FROM CURSOS
+	   WHERE LOWER(NOMECURSO)  = LOWER(CURSO);
+	   IF COD IS NOT NULL THEN
+	   		RETURN COD;
+	   ELSE
+			RETURN 0;
+	   END IF;
+	ELSE
+		RAISE NOTICE 'ERRO: VALOR INVÁLIDO!';
+		RETURN 0;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT GET_ID_CURSO('');
+SELECT GET_ID_CURSO(NULL);
+SELECT GET_ID_CURSO('DSFAFA');
+SELECT GET_ID_CURSO('ENG');
+SELECT GET_ID_CURSO('CURSO DE LITERATURA DA UNICAMP');
+SELECT * FROM CURSOS;
+
+-- ********************** Testes da Função ******************************
+
 -- Criando a Função para obter id do acervo.
 
 CREATE OR REPLACE FUNCTION GET_ID_ACERVO(ACERVO TEXT)
