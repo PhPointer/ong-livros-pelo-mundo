@@ -227,9 +227,9 @@ BEGIN
 	   VALIDAR_STRING(autor) AND
 	   VALIDAR_STRING(editora) THEN
 	   	INSERT INTO ACERVO(nome_livro, nome_autor, nome_editora)
-		VALUES(OBTER_ID_LIVRO(livro), 
-			   OBTER_ID_AUTOR(autor), 
-			   OBTER_ID_EDITORA(editora));
+		VALUES(GET_ID_LIVRO(livro), 
+			   GET_ID_AUTOR(autor), 
+			   GET_ID_EDITORA(editora));
 		RAISE NOTICE 'ACERVO INSERIDO COM SUCESSO!';	   
 		RETURN TRUE;
 	ELSE
@@ -491,6 +491,39 @@ SELECT ADD_LIVRO(NULL);
 SELECT * FROM LIVROS;
 
 -- **********************Testes da Função ******************************
+
+-- Criando a Função para obter id do Usuário.
+
+CREATE OR REPLACE FUNCTION GET_ID_USUARIO(USUARIO TEXT)
+RETURNS INTEGER AS $$
+DECLARE ID_USER INTEGER;
+BEGIN
+	IF VALIDAR_STRING(USUARIO) THEN
+	
+		SELECT ID_USUARIO 
+		INTO ID_USER
+		FROM  USUARIOS
+		WHERE NOME_USUARIO = USUARIO;
+
+		IF FOUND THEN
+			RAISE NOTICE 'USUARIO ENCONTRADO!';
+			RETURN ID_USER;
+		ELSE
+			RAISE EXCEPTION 'USUARIO NÃO ENCONTRADO!';
+		END IF;
+	ELSE
+		RAISE EXCEPTION 'NOME INVÁLIDO!';
+	END IF;	
+END $$
+LANGUAGE plpgsql;
+
+SELECT GET_ID_USUARIO('');
+SELECT GET_ID_USUARIO(NULL);
+SELECT GET_ID_USUARIO('SDCSC');
+SELECT GET_ID_USUARIO('EDINEI');
+SELECT * FROM USUARIOS;
+
+-- ********************** Testes da Função ******************************
 
 -- Criando a Função para gerar datas aleatórias para os livros doados
 CREATE OR REPLACE FUNCTION random_date_between(start_date DATE, end_date DATE) RETURNS DATE AS $$
