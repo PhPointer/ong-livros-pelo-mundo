@@ -527,16 +527,16 @@ SELECT * FROM USUARIOS;
 
 -- Criando a Função para obter id dos Arrecadamentos.
 
-CREATE OR REPLACE FUNCTION GET_ID_ARRECADADOS(NOME_LIVRO TEXT)
+CREATE OR REPLACE FUNCTION GET_ID_ARRECADADOS(NOME_LIVRO_ACERVO TEXT)
 RETURNS INTEGER AS $$
 DECLARE COD INTEGER;
 BEGIN
-	IF VALIDAR_STRING(NOME_LIVRO) THEN
+	IF VALIDAR_STRING(NOME_LIVRO_ACERVO) THEN
 	
 	   	SELECT ID_ARRECA
 		INTO COD
 		FROM ARRECADADOS
-		WHERE LIVROARRECA = GET_ID_LIVRO(NOME_LIVRO);
+		WHERE LIVROARRECA = GET_ID_ACERVO(NOME_LIVRO_ACERVO);
 
 		IF FOUND THEN
 			RAISE NOTICE 'LIVRO ENCONTRADO NA ARRECADAÇÃO!';
@@ -556,6 +556,7 @@ SELECT GET_ID_ARRECADADOS(NULL);
 SELECT GET_ID_ARRECADADOS('SASDAD');
 SELECT GET_ID_ARRECADADOS('IRACEMA');
 SELECT GET_ID_ARRECADADOS('O CORTIÇO');
+SELECT * FROM ACERVO;
 SELECT * FROM LIVROS;
 SELECT * FROM ARRECADADOS;
 -- ********************** Testes da Função ******************************
@@ -872,7 +873,6 @@ INSERT INTO cidade_estado (Cidade, Estado, Rua) VALUES ('São Paulo', 'SP', 'Rua
 INSERT INTO cursos (endereco, tipoCurso, nomeCurso) VALUES (1, 'Literatura', 'Curso de Literatura da UNICAMP');
 INSERT INTO doados (dataDoado, livroDoado, cursoDestino) VALUES (random_date_between(DATE '1994-07-05', DATE '2024-12-31'), 1, 1);
 INSERT INTO arrecadados (livroArreca, dataArreca) VALUES (1, random_date_within_range(DATE((SELECT dataDoado FROM doados ORDER BY id_doado DESC LIMIT 1)), DATE((SELECT dataDoado FROM doados ORDER BY id_doado DESC LIMIT 1) + INTERVAL '2 months')));
-
 
 
 -- Criando nova view para mostra endereço atualizado
