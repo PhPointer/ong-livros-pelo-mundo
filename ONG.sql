@@ -2,62 +2,62 @@ CREATE TABLE livros (
   id_livros SERIAL PRIMARY KEY,
   nome_livro VARCHAR(100) NOT NULL
 );
-  
+
 CREATE TABLE autores (
   id_autor SERIAL PRIMARY KEY,
   nome_autor VARCHAR(255) NOT NULL
 );
-    
+
 CREATE TABLE editoras (
   id_editora SERIAL PRIMARY KEY,
   nome_editora VARCHAR(255) NOT NULL
 );
-      
+
 CREATE TABLE acervo (
   id_acervo SERIAL PRIMARY KEY,
   nome_livro INT NOT NULL,
   nome_autor INT NOT NULL,
   nome_editora INT NOT NULL,
-  FOREIGN KEY (nome_livro) REFERENCES livros(id_livros),
-  FOREIGN KEY (nome_autor) REFERENCES autores(id_autor),
-  FOREIGN KEY (nome_editora) REFERENCES editoras(id_editora)
+  FOREIGN KEY (nome_livro) REFERENCES livros(id_livros) ON DELETE CASCADE,
+  FOREIGN KEY (nome_autor) REFERENCES autores(id_autor) ON DELETE CASCADE,
+  FOREIGN KEY (nome_editora) REFERENCES editoras(id_editora) ON DELETE CASCADE
 );
-      
-CREATE TABLE cidade_estado(
+
+CREATE TABLE cidade_estado (
   id_CiEs SERIAL PRIMARY KEY,
-  Cidade varchar (255) not null,
-  Estado varchar (255) not null,
-  Rua varchar (255) not null
+  Cidade VARCHAR(255) NOT NULL,
+  Estado VARCHAR(255) NOT NULL,
+  Rua VARCHAR(255) NOT NULL
 );
-     
-CREATE TABLE cursos(
+
+CREATE TABLE cursos (
   id_curso SERIAL PRIMARY KEY,
-  endereco int NOT NULL,
-  tipoCurso varchar (255),
-  nomeCurso varchar (255) NOT NULL,
-  FOREIGN KEY (endereco) REFERENCES cidade_estado(id_CiEs)
+  endereco INT NOT NULL,
+  tipoCurso VARCHAR(255),
+  nomeCurso VARCHAR(255) NOT NULL,
+  FOREIGN KEY (endereco) REFERENCES cidade_estado(id_CiEs) ON DELETE CASCADE
 );
-       
-CREATE TABLE doados(
+
+CREATE TABLE doados (
   id_doado SERIAL PRIMARY KEY,
-  dataDoado date not null,
-  livroDoado int NOT NULL,
-  cursoDestino int not null,
-  FOREIGN KEY (livroDoado) REFERENCES acervo(id_acervo),
-  FOREIGN KEY (cursoDestino) REFERENCES cursos(id_curso)
+  dataDoado DATE NOT NULL,
+  livroDoado INT NOT NULL,
+  cursoDestino INT NOT NULL,
+  FOREIGN KEY (livroDoado) REFERENCES acervo(id_acervo) ON DELETE CASCADE,
+  FOREIGN KEY (cursoDestino) REFERENCES cursos(id_curso) ON DELETE CASCADE
 );
-         
-CREATE TABLE arrecadados(
+
+CREATE TABLE arrecadados (
   id_arreca SERIAL PRIMARY KEY,
-  livroArreca int not null,
-  dataArreca date not null,
-  FOREIGN KEY (livroArreca) REFERENCES acervo(id_acervo)
+  livroArreca INT NOT NULL,
+  dataArreca DATE NOT NULL,
+  FOREIGN KEY (livroArreca) REFERENCES acervo(id_acervo) ON DELETE CASCADE
 );
 
 CREATE TABLE usuarios (
   id_usuario SERIAL PRIMARY KEY,
-  nome_usuario varchar (255) NOT NULL,
-  tipo_usuario varchar (255) NOT NULL CHECK(tipo_usuario IN ('adm', 'desenvolvedorSenior', 'estagiario', 'usuario'))
+  nome_usuario VARCHAR(255) NOT NULL,
+  tipo_usuario VARCHAR(255) NOT NULL CHECK(tipo_usuario IN ('adm', 'desenvolvedorSenior', 'estagiario', 'usuario'))
 );
 
 -- Criando a Função para obter id do Curso.
@@ -884,8 +884,8 @@ SELECT * FROM LIVROS;
 -- Criando a Função para realizar update de um Usuário.
 
 CREATE OR REPLACE FUNCTION UPDATE_USUARIO(OLD_USUARIO TEXT, 
-										   NEW_USUARIO TEXT, 
-	 									   TYPE_USER TEXT)
+										  NEW_USUARIO TEXT, 
+	 									  TYPE_USER TEXT)
 RETURNS BOOLEAN AS $$
 BEGIN
 	IF VALIDAR_STRING(OLD_USUARIO) AND
