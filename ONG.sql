@@ -486,7 +486,7 @@ BEGIN
 		AND VALIDAR_STRING(endereco) THEN
 			INSERT INTO CURSOS(ENDERECO, TIPOCURSO, NOMECURSO)
 			VALUES(
-				OBTER_ID_ENDERECO(endereco),
+				GET_ID_ENDERECO(endereco),
 				tipo_curso,
 				nome_curso
 			);
@@ -1382,7 +1382,71 @@ BEFORE INSERT ON doados
 FOR EACH ROW
 EXECUTE FUNCTION checa_se_livro_ja_foi_doado();
 
+-- Trigger de verificar endereço existente 
 
+CREATE OR REPLACE FUNCTION verifica_endereco_existente()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM cidade_estado WHERE id_CiEs = NEW.endereco) THEN
+        RAISE EXCEPTION 'Endereço não cadastrado!';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger
+CREATE TRIGGER gatilho_verifica_endereco_existente
+BEFORE INSERT ON cursos
+FOR EACH ROW
+EXECUTE FUNCTION verifica_endereco_existente();
+
+begin;
+	select add_curso('nome curso teste tg','teste tipo curso','rua das flores');
+	select add_curso('nome curso teste tg','teste tipo curso','dfdfdf');
+	select * from cursos;
+	select * from cidade_estado;
+rollback;
+
+-- ******************************* Teste  trigger ************************************
+
+-- Trigger verifica_livro_autor_editora
+
+CREATE OR REPLACE FUNCTION verifica_livro_autor_editora()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM livros WHERE id_livros = NEW.nome_livro) THEN
+        RAISE EXCEPTION 'Livro não cadastrado.';
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM autores WHERE id_autor = NEW.nome_autor) THEN
+        RAISE EXCEPTION 'Autor não cadastrado.';
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM editoras WHERE id_editora = NEW.nome_editora) THEN
+        RAISE EXCEPTION 'Editora não cadastrada.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger
+CREATE TRIGGER gatilho_verifica_livro_autor_editora
+BEFORE INSERT ON acervo
+FOR EACH ROW
+EXECUTE FUNCTION verifica_livro_autor_editora();
+
+
+	select * from livros;
+	select * from autores;
+	select * from editoras;
+	select * from acervo;
+	select add_acervo('o cortiço','jorge amado','ática');
+	select add_acervo('o cortiço','jorge amado','sddada');
+	select add_acervo('o cortiço','sdsdsds','ática');
+	select add_acervo('sdsdssd','jorge amado','ática');
+
+-- ******************************* Teste  trigger ************************************
 
 CREATE VIEW VeIDdoLivroAutorEditora AS
 SELECT
