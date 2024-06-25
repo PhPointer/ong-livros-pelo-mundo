@@ -921,6 +921,10 @@ ROLLBACK;
 SELECT * FROM USUARIOS;
 -- **********************Testes da Função ******************************
 
+
+
+
+
 -- Criando a Função para gerar datas aleatórias para os livros doados
 CREATE OR REPLACE FUNCTION random_date_between(start_date DATE, end_date DATE) RETURNS DATE AS $$
 DECLARE
