@@ -1020,6 +1020,37 @@ SELECT * FROM ACERVO;
 SELECT * FROM ARRECADADOS;
 -- **********************Testes da Função ******************************
 
+-- Criando a Função para Deletar Autor.
+
+CREATE OR REPLACE FUNCTION DELETE_AUTOR(AUTOR TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+	
+	IF VALIDAR_STRING(AUTOR) THEN
+	
+		DELETE FROM autores
+		WHERE id_autor = GET_ID_AUTOR(AUTOR);
+	
+		IF FOUND THEN
+			RAISE NOTICE 'REGISTRO DELETADO COM SUCESSO!';
+			RETURN TRUE;
+		ELSE
+			RAISE EXCEPTION 'FALHA AO DELETAR REGISTRO!';
+		END IF;
+	ELSE
+		RAISE EXCEPTION 'PARÂMETROS DE ENTRADA INVÁLIDOS!';
+	END IF;
+END $$
+LANGUAGE plpgsql;
+	
+BEGIN;
+	SELECT DELETE_AUTOR('PAULO COELHO');
+ROLLBACK;
+
+SELECT * FROM AUTORES;
+-- **********************Testes da Função ******************************
+
+
 
 
 -- Criando a Função para gerar datas aleatórias para os livros doados
