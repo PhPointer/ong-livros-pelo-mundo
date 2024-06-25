@@ -1306,7 +1306,34 @@ SELECT Livros_Arrecadados_Data('2021-07-10');
 
 -- ******************************* TESTE DA FUNÇÃO *****************************************
 
+-- Função para listar todos os livros de um autor específico
 
+CREATE OR REPLACE FUNCTION listar_livros_por_autor(autor_id INT)
+RETURNS TABLE (
+    livro_id INT,
+    nome_livro VARCHAR(100),
+    nome_autor VARCHAR(255),
+    nome_editora VARCHAR(255)
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT l.id_livros, l.nome_livro, a.nome_autor, e.nome_editora
+    FROM livros l
+    JOIN acervo ac ON l.id_livros = ac.nome_livro
+    JOIN autores a ON ac.nome_autor = a.id_autor
+    JOIN editoras e ON ac.nome_editora = e.id_editora
+    WHERE a.id_autor = autor_id;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT * FROM AUTORES;
+-- Exemplo de uso:
+ SELECT * FROM listar_livros_por_autor(GET_ID_AUTOR('EUCLIDES DA CUNHA'));
+ SELECT * FROM listar_livros_por_autor(GET_ID_AUTOR('jorge amado'));
+
+
+-- ********************************** TESTE DA FUNÇÃO ************************************
 
 
 
