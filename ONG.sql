@@ -1050,6 +1050,37 @@ ROLLBACK;
 SELECT * FROM AUTORES;
 -- **********************Testes da Função ******************************
 
+-- Criando a Função para Deletar Endereço.
+
+CREATE OR REPLACE FUNCTION DELETE_ENDERECO(ENDERECO TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+	
+	IF VALIDAR_STRING(ENDERECO) THEN
+	
+		DELETE FROM cidade_estado
+		WHERE id_CiEs = GET_ID_ENDERECO(ENDERECO);
+	
+		IF FOUND THEN
+			RAISE NOTICE 'REGISTRO DELETADO COM SUCESSO!';
+			RETURN TRUE;
+		ELSE
+			RAISE EXCEPTION 'FALHA AO DELETAR REGISTRO!';
+		END IF;
+	ELSE
+		RAISE EXCEPTION 'PARÂMETROS DE ENTRADA INVÁLIDOS!';
+	END IF;
+END $$
+LANGUAGE plpgsql;
+
+BEGIN;
+	SELECT DELETE_ENDERECO('RUA DAS FLORES');
+ROLLBACK;
+
+SELECT * FROM cidade_estado;
+-- **********************Testes da Função ******************************
+
+
 
 
 
