@@ -1171,6 +1171,38 @@ ROLLBACK;
 SELECT * FROM EDITORAS;
 -- **********************Testes da Função ******************************
 
+-- Criando a Função para Deletar Livro.
+
+CREATE OR REPLACE FUNCTION DELETE_LIVRO(LIVRO TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+	
+	IF VALIDAR_STRING(LIVRO) THEN
+	
+		DELETE FROM livros
+		WHERE id_livros = GET_ID_LIVRO(LIVRO);
+	
+		IF FOUND THEN
+			RAISE NOTICE 'REGISTRO DELETADO COM SUCESSO!';
+			RETURN TRUE;
+		ELSE
+			RAISE EXCEPTION 'FALHA AO DELETAR REGISTRO!';
+		END IF;
+	ELSE
+		RAISE EXCEPTION 'PARÂMETROS DE ENTRADA INVÁLIDOS!';
+	END IF;
+END $$
+LANGUAGE plpgsql;
+
+BEGIN;
+	SELECT DELETE_LIVRO('O ALQUIMISTA');
+ROLLBACK;
+
+SELECT * FROM LIVROS;
+-- **********************Testes da Função ******************************
+
+
+
 
 
 
