@@ -1201,7 +1201,35 @@ ROLLBACK;
 SELECT * FROM LIVROS;
 -- **********************Testes da Função ******************************
 
+-- Criando a Função para Deletar Usuário.
 
+CREATE OR REPLACE FUNCTION DELETE_USUARIO(USUARIO TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+	
+	IF VALIDAR_STRING(USUARIO) THEN
+	
+		DELETE FROM usuarios
+		WHERE id_usuario = GET_ID_USUARIO(USUARIO);
+	
+		IF FOUND THEN
+			RAISE NOTICE 'REGISTRO DELETADO COM SUCESSO!';
+			RETURN TRUE;
+		ELSE
+			RAISE EXCEPTION 'FALHA AO DELETAR REGISTRO!';
+		END IF;
+	ELSE
+		RAISE EXCEPTION 'PARÂMETROS DE ENTRADA INVÁLIDOS!';
+	END IF;
+END $$
+LANGUAGE plpgsql;
+
+BEGIN;
+	SELECT DELETE_USUARIO('EDINEI');
+ROLLBACK;
+
+SELECT * FROM USUARIOS;
+-- **********************Testes da Função ******************************
 
 
 
