@@ -1231,6 +1231,35 @@ ROLLBACK;
 SELECT * FROM USUARIOS;
 -- **********************Testes da Função ******************************
 
+-- FUNÇÃO QUE LISTA DOAÇÕES DE LIVRO POR PERIODO
+
+CREATE OR REPLACE FUNCTION listar_doacoes_por_periodo(data_inicial DATE, data_final DATE)
+RETURNS TABLE (
+    id_doacao INT,
+    data_doacao DATE,
+    livro_id INT,
+    nome_livro VARCHAR(100),
+    curso_id INT,
+    nome_curso VARCHAR(255)
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT d.id_doado, d.dataDoado, l.id_livros, l.nome_livro, c.id_curso, c.nomeCurso
+    FROM doados d
+    JOIN acervo a ON d.livroDoado = a.id_acervo
+    JOIN livros l ON a.nome_livro = l.id_livros
+    JOIN cursos c ON d.cursoDestino = c.id_curso
+    WHERE d.dataDoado BETWEEN data_inicial AND data_final;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Exemplo de uso:
+select * from doados;
+SELECT * FROM listar_doacoes_por_periodo(DATE '1994-12-18', DATE '2010-12-31');
+SELECT * FROM listar_doacoes_por_periodo(DATE '2007-01-01', DATE '2024-12-31');
+-- *********************************** TESTE DA FUNÇÃO **************************************
+
 
 
 
