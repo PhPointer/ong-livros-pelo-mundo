@@ -129,6 +129,42 @@ SELECT * FROM LIVROS;
 
 -- ********************** Testes da Função ******************************
 
+-- Criando a Função para obter ID da Doação.
+
+CREATE OR REPLACE FUNCTION GET_ID_DOACAO(LIVRO TEXT)
+RETURNS INTEGER AS $$
+DECLARE COD INTEGER;
+BEGIN
+	
+	IF VALIDAR_STRING(LIVRO) THEN
+		
+		IF GET_ID_ACERVO(LIVRO) IS NOT NULL THEN
+
+			SELECT id_doado
+			INTO COD
+			FROM doados
+			WHERE livroDoado = GET_ID_ACERVO(LIVRO);
+	
+			RAISE NOTICE '';
+			RETURN COD;
+		ELSE 
+			RAISE EXCEPTION 'REGISTRO NÃO ENCONTRADO!';
+		END IF;
+	ELSE
+		RAISE EXCEPTION 'PARÂMETRO DE ENTRADA INVÁLIDO!';
+	END IF;
+END $$
+LANGUAGE plpgsql;
+
+BEGIN;
+	SELECT GET_ID_DOACAO('O ALQUIMISTA');
+ROLLBACK;
+
+SELECT * FROM CURSOS;
+SELECT * FROM LIVROS;
+SELECT * FROM DOADOS; 
+-- **********************Testes da Função ******************************
+
 -- Criando a Função para Adicionar um Usuario.
 
 CREATE OR REPLACE FUNCTION ADD_USUARIO(NOME_USER TEXT, TYPE_USER TEXT)
