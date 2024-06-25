@@ -1080,7 +1080,35 @@ ROLLBACK;
 SELECT * FROM cidade_estado;
 -- **********************Testes da Função ******************************
 
+-- Criando a Função para Deletar Curso.
 
+CREATE OR REPLACE FUNCTION DELETE_CURSO(CURSO TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+	
+	IF VALIDAR_STRING(CURSO) THEN
+	
+		DELETE FROM cursos
+		WHERE id_curso = GET_ID_CURSO(CURSO);
+	
+		IF FOUND THEN
+			RAISE NOTICE 'REGISTRO DELETADO COM SUCESSO!';
+			RETURN TRUE;
+		ELSE
+			RAISE EXCEPTION 'FALHA AO DELETAR REGISTRO!';
+		END IF;
+	ELSE
+		RAISE EXCEPTION 'PARÂMETROS DE ENTRADA INVÁLIDOS!';
+	END IF;
+END $$
+LANGUAGE plpgsql;
+
+BEGIN;
+	SELECT DELETE_CURSO('CURSO DE LITERATURA DA UNICAMP');
+ROLLBACK;
+
+SELECT * FROM CURSOS;
+-- **********************Testes da Função ******************************
 
 
 
