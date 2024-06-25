@@ -1283,6 +1283,29 @@ SELECT Livros_Doado_Curso(GET_ID_CURSO('CURSO DE HISTÓRIA DA USP'));
 
 -- ******************************** TESTE DA FUNÇÃO *****************************************
 
+-- FUNÇÃO QUE VERIFICA LIVROS ARRECADADOS EM UMA DATA ESPECÍFICA.
+
+CREATE OR REPLACE FUNCTION Livros_Arrecadados_Data(data DATE)
+    RETURNS TABLE(nome_livro VARCHAR(100))
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT l.nome_livro
+    FROM livros l
+    JOIN acervo a ON l.id_livros = a.nome_livro
+    JOIN arrecadados ar ON a.id_acervo = ar.livroArreca
+    WHERE ar.dataArreca = data;
+END$$
+LANGUAGE plpgsql;
+
+SELECT * FROM LIVROS;
+SELECT * FROM ACERVO;
+SELECT * FROM ARRECADADOS;
+SELECT Livros_Arrecadados_Data('2016-12-10');
+SELECT Livros_Arrecadados_Data('2021-07-10');
+
+-- ******************************* TESTE DA FUNÇÃO *****************************************
+
 
 
 
