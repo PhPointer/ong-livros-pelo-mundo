@@ -1610,6 +1610,86 @@ INSERT INTO cursos (endereco, tipoCurso, nomeCurso) VALUES (1, 'Literatura', 'Cu
 INSERT INTO doados (dataDoado, livroDoado, cursoDestino) VALUES (random_date_between(DATE '1994-07-05', DATE '2024-12-31'), 1, 1);
 INSERT INTO arrecadados (livroArreca, dataArreca) VALUES (1, random_date_within_range(DATE((SELECT dataDoado FROM doados ORDER BY id_doado DESC LIMIT 1)), DATE((SELECT dataDoado FROM doados ORDER BY id_doado DESC LIMIT 1) + INTERVAL '2 months')));
 
+-- ************************************** VIEWS ******************************************
+
+-- View para mostrar todos os livros com seus autores e editoras
+
+CREATE VIEW vw_livros_completos AS
+SELECT 
+    l.id_livros, 
+    l.nome_livro, 
+    a.nome_autor, 
+    e.nome_editora
+FROM 
+    acervo ac
+JOIN 
+    livros l ON ac.nome_livro = l.id_livros
+JOIN 
+    autores a ON ac.nome_autor = a.id_autor
+JOIN 
+    editoras e ON ac.nome_editora = e.id_editora;
+
+
+SELECT * FROM vw_livros_completos;
+
+
+-- View para mostrar detalhes dos cursos e suas localizações
+CREATE VIEW vw_cursos_localizacao AS
+SELECT 
+    c.id_curso, 
+    c.nomeCurso, 
+    c.tipoCurso, 
+    ce.Cidade, 
+    ce.Estado, 
+    ce.Rua
+FROM 
+    cursos c
+JOIN 
+    cidade_estado ce ON c.endereco = ce.id_CiEs;
+
+SELECT * FROM vw_cursos_localizacao;
+
+
+-- View para mostrar todos os livros doados com suas datas e cursos de destino
+CREATE VIEW vw_livros_doados AS
+SELECT 
+    d.id_doado, 
+    d.dataDoado, 
+    l.nome_livro, 
+    c.nomeCurso
+FROM 
+    doados d
+JOIN 
+    acervo ac ON d.livroDoado = ac.id_acervo
+JOIN 
+    livros l ON ac.nome_livro = l.id_livros
+JOIN 
+    cursos c ON d.cursoDestino = c.id_curso;
+
+SELECT * FROM vw_livros_doados;
+
+
+-- View para mostrar todos os livros arrecadados com suas datas
+CREATE VIEW vw_livros_arrecadados AS
+SELECT 
+    ar.id_arreca, 
+    ar.dataArreca, 
+    l.nome_livro, 
+    a.nome_autor, 
+    e.nome_editora
+FROM 
+    arrecadados ar
+JOIN 
+    acervo ac ON ar.livroArreca = ac.id_acervo
+JOIN 
+    livros l ON ac.nome_livro = l.id_livros
+JOIN 
+    autores a ON ac.nome_autor = a.id_autor
+JOIN 
+    editoras e ON ac.nome_editora = e.id_editora;
+
+
+SELECT * FROM vw_livros_arrecadados;
 
 -- Criando nova view para mostra endereço atualizado
 CREATE VIEW endereco_enviado AS
@@ -1632,6 +1712,7 @@ JOIN
 -- Consultando a View 'endereco_enviado'
 SELECT * FROM endereco_enviado;
 
+-- ************************************** VIEWS ******************************************
 
 -- Stored Procedure 01: Atualizará os dados na tabela cidade_estado.
 CREATE OR REPLACE PROCEDURE atualizar_endereco_curso(
