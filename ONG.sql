@@ -1260,6 +1260,31 @@ SELECT * FROM listar_doacoes_por_periodo(DATE '1994-12-18', DATE '2010-12-31');
 SELECT * FROM listar_doacoes_por_periodo(DATE '2007-01-01', DATE '2024-12-31');
 -- *********************************** TESTE DA FUNÇÃO **************************************
 
+-- FUNÇÃO PARA VERIFICAR LIVROS DOADOS PARA UM CURSO ESPECÍFICO. 
+
+CREATE OR REPLACE FUNCTION Livros_Doado_Curso(cursoId INT)
+    RETURNS TABLE(nome_livro VARCHAR(100))
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT l.nome_livro
+    FROM livros l
+    JOIN acervo a ON l.id_livros = a.nome_livro
+    JOIN doados d ON a.id_acervo = d.livroDoado
+    WHERE d.cursoDestino = cursoId;
+END $$
+LANGUAGE plpgsql;
+
+SELECT * FROM CURSOS;
+SELECT * FROM DOADOS;
+SELECT * FROM LIVROS;
+SELECT Livros_Doado_Curso(GET_ID_CURSO('CURSO DE LITERATURA DA UNICAMP'));
+SELECT Livros_Doado_Curso(GET_ID_CURSO('CURSO DE HISTÓRIA DA USP'));
+
+-- ******************************** TESTE DA FUNÇÃO *****************************************
+
+
+
 
 
 
