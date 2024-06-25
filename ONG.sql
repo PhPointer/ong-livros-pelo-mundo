@@ -1110,6 +1110,39 @@ ROLLBACK;
 SELECT * FROM CURSOS;
 -- **********************Testes da Função ******************************
 
+-- Criando a Função para Deletar Doados.
+
+CREATE OR REPLACE FUNCTION DELETE_DOADOS(LIVRO TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+	
+	IF VALIDAR_STRING(LIVRO) THEN
+	
+		DELETE FROM doados
+		WHERE id_doado = GET_ID_DOACAO(LIVRO);
+	
+		IF FOUND THEN
+			RAISE NOTICE 'REGISTRO DELETADO COM SUCESSO!';
+			RETURN TRUE;
+		ELSE
+			RAISE EXCEPTION 'FALHA AO DELETAR REGISTRO!';
+		END IF;
+	ELSE
+		RAISE EXCEPTION 'PARÂMETROS DE ENTRADA INVÁLIDOS!';
+	END IF;
+END $$
+LANGUAGE plpgsql;
+
+BEGIN;
+	SELECT DELETE_DOADOS('O ALQUIMISTA');
+ROLLBACK;
+
+SELECT * FROM LIVROS;
+SELECT * FROM DOADOS;
+-- **********************Testes da Função ******************************
+
+
+
 
 
 -- Criando a Função para gerar datas aleatórias para os livros doados
