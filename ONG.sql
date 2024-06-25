@@ -988,6 +988,38 @@ SELECT * FROM LIVROS;
 SELECT * FROM ACERVO;
 -- **********************Testes da Função ******************************
 
+-- Criando a Função para Deletar Arrecadados.
+
+CREATE OR REPLACE FUNCTION DELETE_ARRECADADOS(LIVRO TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+	
+	IF VALIDAR_STRING(LIVRO) THEN
+
+		DELETE FROM arrecadados 
+		WHERE id_arreca = GET_ID_ARRECADADOS(LIVRO);
+	
+		IF FOUND THEN
+			RAISE NOTICE 'REGISTRO DELETADO COM SUCESSO!';
+			RETURN TRUE;
+		ELSE
+			RAISE EXCEPTION 'FALHA AO DELETAR REGISTRO!';
+		END IF;
+	ELSE
+		RAISE EXCEPTION 'PARÂMETROS DE ENTRADA INVÁLIDOS!';
+	END IF;
+END $$
+LANGUAGE plpgsql;
+
+BEGIN;
+	SELECT DELETE_ARRECADADOS('O ALQUIMISTA');
+ROLLBACK;
+
+SELECT * FROM LIVROS;
+SELECT * FROM ACERVO;
+SELECT * FROM ARRECADADOS;
+-- **********************Testes da Função ******************************
+
 
 
 -- Criando a Função para gerar datas aleatórias para os livros doados
